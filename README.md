@@ -22,7 +22,7 @@ To execute this testing framework locally, ensure you have the following install
 ### 1. Clone the Repository
 Clone the framework into your preferred local directory:
 ```bash
-git clone <repository_url>
+git clone https://github.com/chinmaymudholkar/PyApiSample.git
 cd PyApiSample
 ```
 
@@ -56,3 +56,7 @@ To process auto-formattable linting exceptions:
 ```bash
 uv run ruff check --fix
 ```
+
+### Coming soon...
+- Reporting using Alure reports
+- Execution using GitHub Actions
