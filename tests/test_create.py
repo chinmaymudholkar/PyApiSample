@@ -1,25 +1,22 @@
-def test_create_object(client):
+def test_create_post(client):
     # Arrange
     payload = {
-        "name": "Apple MacBook Pro 16",
-        "data": {
-            "year": 2019,
-            "price": 1849.99,
-            "CPU model": "Intel Core i9",
-            "Hard disk size": "1 TB",
-        },
+        "title": "foo",
+        "body": "bar",
+        "userId": 1,
     }
 
     # Act
-    response = client.post("/objects", json=payload)
+    response = client.post("/posts", json=payload)
 
     # Assert
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
 
-    assert "id" in data
-    assert data["name"] == payload["name"]
-    assert data["data"]["year"] == 2019
+    assert data["id"] == 101  # JSONPlaceholder always returns 101 for new posts
+    assert data["title"] == payload["title"]
+    assert data["body"] == payload["body"]
+    assert data["userId"] == payload["userId"]
 
     # Clean up what we created
-    client.delete(f"/objects/{data['id']}")
+    client.delete(f"/posts/{data['id']}")

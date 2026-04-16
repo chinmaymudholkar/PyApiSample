@@ -30,7 +30,7 @@ cd PyApiSample
 The framework reads the base URL from the `.env` file.  While this file is generally not added to the git repo, I've added it here to ensure
 an `.env` file exists at the root of the project with the requisite base properties for demo purposes.
 ```env
-BASE_URL=https://api.restful-api.dev
+BASE_URL=https://jsonplaceholder.typicode.com
 ```
 
 ### 3. Installation

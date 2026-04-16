@@ -1,16 +1,11 @@
-def test_delete_object(client, new_object):
-    # Arrange: `new_object` fixture handles object creation implicitly.
+def test_delete_post(client):
+    # Arrange
+    post_id = 1
 
     # Act
-    response = client.delete(f"/objects/{new_object}")
+    response = client.delete(f"/posts/{post_id}")
 
     # Assert
     assert response.status_code == 200
-    data = response.json()
-
-    # The API returns {"message": "Object with id = x has been deleted."}
-    assert "deleted" in data.get("message", "").lower()
-
-    # Verify it's actually deleted
-    get_response = client.get(f"/objects/{new_object}")
-    assert get_response.status_code == 404
+    # JSONPlaceholder returns an empty object on successful delete
+    assert response.json() == {}

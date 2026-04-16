@@ -13,16 +13,17 @@ def client():
 
 @pytest.fixture
 def new_object(client):
-    """Fixture to create a new object and yield its ID, deleting it after test."""
+    """Fixture to create a new post and yield its ID, deleting it after test."""
     payload = {
-        "name": "Test Device",
-        "data": {"year": 2026, "price": 999.99, "color": "Silver"},
+        "title": "Test Post",
+        "body": "This is a test post.",
+        "userId": 1,
     }
-    response = client.post("/objects", json=payload)
+    response = client.post("/posts", json=payload)
     data = response.json()
     obj_id = data["id"]
 
     yield obj_id
 
     # Teardown
-    client.delete(f"/objects/{obj_id}")
+    client.delete(f"/posts/{obj_id}")

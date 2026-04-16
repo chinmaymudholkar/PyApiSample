@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Logs
+logs/audit.log
+
 # Workspace
 .idea
 .vscode

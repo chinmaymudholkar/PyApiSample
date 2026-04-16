@@ -1,33 +1,36 @@
-def test_update_object(client, new_object):
+def test_update_post(client):
     # Arrange
+    post_id = 1
     payload = {
-        "name": "Updated Test Device",
-        "data": {"year": 2027, "price": 1099.99, "color": "Gold"},
+        "id": post_id,
+        "title": "updated title",
+        "body": "updated body",
+        "userId": 1,
     }
 
     # Act
-    response = client.put(f"/objects/{new_object}", json=payload)
+    response = client.put(f"/posts/{post_id}", json=payload)
 
     # Assert
     assert response.status_code == 200
     data = response.json()
 
-    assert data["id"] == new_object
-    assert data["name"] == "Updated Test Device"
-    assert data["data"]["price"] == 1099.99
-    assert data["data"]["color"] == "Gold"
+    assert data["id"] == post_id
+    assert data["title"] == "updated title"
+    assert data["body"] == "updated body"
 
 
-def test_patch_object(client, new_object):
+def test_patch_post(client):
     # Arrange
-    payload = {"name": "Patched Test Device"}
+    post_id = 1
+    payload = {"title": "patched title"}
 
     # Act
-    response = client.patch(f"/objects/{new_object}", json=payload)
+    response = client.patch(f"/posts/{post_id}", json=payload)
 
     # Assert
     assert response.status_code == 200
     data = response.json()
 
-    assert data["id"] == new_object
-    assert data["name"] == "Patched Test Device"
+    assert data["id"] == post_id
+    assert data["title"] == "patched title"
