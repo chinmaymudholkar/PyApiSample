@@ -62,6 +62,10 @@ To process auto-formattable linting exceptions:
 ```bash
 uv run ruff check --fix
 ```
+### Logging
+
+As an HTTP request or response may span multiple lines, audit logging for this framework uses an SQLite database instead
+of a flat .log file.  This also allows for filtering records based on time or source of error.
 
 ### Coming soon...
 - Reporting using Allure reports
