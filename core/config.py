@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from core.utils import LogMasker
+from core.utils import LogMasker, SQLiteHandler
 
 
 class SensitiveFormatter(logging.Formatter):
@@ -18,9 +18,9 @@ class SensitiveFormatter(logging.Formatter):
 
 
 # Set up logging
-handler = logging.FileHandler("logs/audit.log", mode="a")
+handler = SQLiteHandler("logs/audit.db")
 handler.setFormatter(
-    SensitiveFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"),
+    SensitiveFormatter("%(message)s"),
 )
 
 logging.basicConfig(

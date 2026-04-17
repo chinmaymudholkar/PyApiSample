@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 
 from core.config import config
+from core.constants import HttpMethods
 from core.utils import LogMasker
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,9 @@ class ApiClient:
         self.client: httpx.Client = httpx.Client(base_url=self.base_url)
         logger.info("Initialized ApiClient with base_url: %s", self.base_url)
 
-    def _request(self, method: str, endpoint: str, **kwargs: Any) -> httpx.Response:
+    def _request(
+        self, method: HttpMethods, endpoint: str, **kwargs: Any
+    ) -> httpx.Response:
         """Send an HTTP request and log it."""
         masked_json = LogMasker.redact_data(kwargs.get("json", ""))
         masked_headers = LogMasker.redact_data(kwargs.get("headers", {}))
@@ -55,23 +58,23 @@ class ApiClient:
 
     def get(self, endpoint: str = "/", **kwargs: Any) -> httpx.Response:
         """Send a GET request."""
-        return self._request("GET", endpoint, **kwargs)
+        return self._request(HttpMethods.GET, endpoint, **kwargs)
 
     def post(self, endpoint: str = "/", **kwargs: Any) -> httpx.Response:
         """Send a POST request."""
-        return self._request("POST", endpoint, **kwargs)
+        return self._request(HttpMethods.POST, endpoint, **kwargs)
 
     def put(self, endpoint: str = "/", **kwargs: Any) -> httpx.Response:
         """Send a PUT request."""
-        return self._request("PUT", endpoint, **kwargs)
+        return self._request(HttpMethods.PUT, endpoint, **kwargs)
 
     def patch(self, endpoint: str = "/", **kwargs: Any) -> httpx.Response:
         """Send a PATCH request."""
-        return self._request("PATCH", endpoint, **kwargs)
+        return self._request(HttpMethods.PATCH, endpoint, **kwargs)
 
     def delete(self, endpoint: str = "/", **kwargs: Any) -> httpx.Response:
         """Send a DELETE request."""
-        return self._request("DELETE", endpoint, **kwargs)
+        return self._request(HttpMethods.DELETE, endpoint, **kwargs)
 
     def close(self) -> None:
         """Close the underlying HTTP client session."""

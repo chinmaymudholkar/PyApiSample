@@ -1,26 +1,57 @@
 """Utility module for log masking and other helper functions."""
 
+import logging
 import re
-from typing import Any, ClassVar
+import sqlite3
+import threading
+from typing import Any
+
+from core.constants import SENSITIVE_KEYS
+
+
+class SQLiteHandler(logging.Handler):
+    """Logging handler that writes to an SQLite database."""
+
+    def __init__(self, db_path: str) -> None:
+        """Initialize the SQLite logging handler.
+
+        Args:
+            db_path: The filesystem path to the SQLite database.
+
+        """
+        super().__init__()
+        self.db_path = db_path
+        self._lock = threading.Lock()
+        self._init_db()
+
+    def _init_db(self) -> None:
+        """Initialize the database schema."""
+        with self._lock, sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS logs ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                "logger_name TEXT,"
+                "level TEXT,"
+                "message TEXT"
+                ")",
+            )
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Save a log record to the database."""
+        try:
+            msg = self.format(record)
+            with self._lock, sqlite3.connect(self.db_path) as conn:
+                conn.execute(
+                    "INSERT INTO logs (logger_name, level, message) VALUES (?, ?, ?)",
+                    (record.name, record.levelname, msg),
+                )
+        except sqlite3.Error, RuntimeError:
+            self.handleError(record)
 
 
 class LogMasker:
     """Utility class to mask sensitive information in logs."""
-
-    SENSITIVE_KEYS: ClassVar[set[str]] = {
-        "password",
-        "token",
-        "access_token",
-        "refresh_token",
-        "authorization",
-        "api_key",
-        "apikey",
-        "x-api-key",
-        "secret",
-        "client_secret",
-        "cookie",
-        "set-cookie",
-    }
 
     @classmethod
     def redact_data(cls, data: Any) -> Any:
@@ -29,7 +60,7 @@ class LogMasker:
             return {
                 k: (
                     "***REDACTED***"
-                    if str(k).lower() in cls.SENSITIVE_KEYS
+                    if str(k).lower() in SENSITIVE_KEYS
                     else cls.redact_data(v)
                 )
                 for k, v in data.items()
@@ -43,7 +74,7 @@ class LogMasker:
         """Mask sensitive information in a string (e.g., Bearer tokens)."""
         # Mask Bearer tokens
         text = re.sub(
-            r"(Bearer\s+)[a-zA-Z0-9\-\._~+/]+=*",
+            r"(Bearer\s+)[a-zA-Z0-9\-._~+/]+=*",
             r"\1***REDACTED***",
             text,
             flags=re.IGNORECASE,
